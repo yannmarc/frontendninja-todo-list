@@ -52,6 +52,10 @@ body {
   border-color: var(--border);
 }
 
+.mark-todo.active {
+  background: linear-gradient(97.91deg, #57DDFF 6.1%, #C058F3 95.6%);
+}
+
 .todo-item {
   box-shadow: 0px 10px 16px rgba(0, 0, 0, 0.05);
   background: var(--white);
