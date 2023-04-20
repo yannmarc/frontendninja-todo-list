@@ -197,6 +197,9 @@ const App = () => {
                     ))
                 }
             </div>
+            <div className="py-4 text-center bg-zinc-100 text-slate-700 font-semibold mt-7">
+                <p>Proudly implemented by <a href="">@ninja_frontend 🇨🇲</a></p>
+            </div>
           </footer>
         </div>
       </div>
