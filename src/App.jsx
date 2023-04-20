@@ -233,7 +233,7 @@ const App = () => {
                     ))
                 }
             </div>
-            <div className="py-4 text-center bg-zinc-100 text-slate-700 font-semibold mt-7">
+            <div className="py-4 text-center bg-zinc-100 text-slate-700 font-semibold mt-7 text-[12px] md:text-[14px] lg:text-base">
                 <p>Proudly implemented by <a href="twitter.com/ninja_frontend">@ninja_frontend 🇨🇲</a></p>
             </div>
           </footer>
