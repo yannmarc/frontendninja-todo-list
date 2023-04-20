@@ -17,6 +17,7 @@ const App = () => {
   const [bgImage, setBgImage] = useState(bgDesktop);
   const [theme, setTheme] = useState('light');
 
+
   const inputRef = useRef();
 
   const filterBtns = [ "All", "Active", "Completed" ]
@@ -44,7 +45,15 @@ const App = () => {
   const markTodoItem = (index) => {
     const newTodoList = [...todoList];
     newTodoList[index].complete = !newTodoList[index].complete;
+    const todo = document.querySelector('.mark-todo');
+    todo.addEventListener("onclick", (e) => {
+        todo.classList.add("active")
+        if(todo.className === "active") {
+            todo.classList.remove("active");
+        }
+    })
     setTodoList(newTodoList);
+
   };
 
   // Clear completed todo
@@ -66,14 +75,12 @@ const App = () => {
     } 
   }
 
-  // handle the resize of the image header
-  
-  console.log(theme)
-
+  // handling the theme
   const handleTheme = () => {
     setTheme((currentTheme) => currentTheme === 'light' ? 'dark' : 'light');
     handleResize()
   }
+  // handle resize
   const handleResize = () => {
     const windowWidth = window.innerWidth;
     if (windowWidth >= 1024 && theme === 'light') {
@@ -89,10 +96,30 @@ const App = () => {
     }
   }
 
+  // initializing the onDrag start
+  const handleDragStart = (e, index) => {
+    e.dataTransfer.setData("index", index)
+  }
+
+  // initializing the dragover 
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+  }
+
+  // handling the dragged items and sorting them
+  const handleDragedItem = (e, index) => {
+    const draggedIndex = e.dataTransfer.getData("index");
+    const newTodoList = [...todoList];
+    const draggedTodo = newTodoList[draggedIndex];
+    newTodoList.splice(draggedIndex, 1);
+    newTodoList.splice(index, 0, draggedTodo);
+    setTodoList(newTodoList);
+  }
+  
+
   useEffect(() => {
     const handleResize = () => {
         let width = window.innerWidth;
-        console.log(width)
         if (width >= 1024 && theme === 'light') {
             setBgImage(bgDesktop)
         }
@@ -148,18 +175,27 @@ const App = () => {
             <div className="todo-item rounded-[4px] overflow-hidden">
                 {todoList.filter(filterHandler).map((todo, index) => (
                     <div
-                    className=" border-b-2 todo-border py-4 flex items-center px-6 last:border-b-transparent justify-between"
+                    className=" border-b-2 hover:cursor-move todo-border py-4 flex items-center px-6 last:border-b-transparent justify-between"
                     key={index}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDrop={(e) => handleDragedItem(e, index)}
                     >
                     <div className="flex items-center">
                         <button
-                        className="block w-[24px] h-[24px] rounded-full border-2 small-ring bg-[linear-gradient(97.91deg, #57DDFF 6.1%, #C058F3 95.6%);]"
+                        className="mark-todo w-[24px] h-[24px] rounded-full flex justify-center items-center border-2 small-ring"
                         onClick={() => markTodoItem(index)}
                         style={
                             todo.complete
                             ? {
-                                borderImage: "linear-gradient(97.91deg, #57DDFF 6.1%, #C058F3 95.6%)",
+                                background: "linear-gradient(97.91deg, #57DDFF 6.1%, #C058F3 95.6%)",
                                 backgroundImage: "linear-gradient(97.91deg, #57DDFF 6.1%, #C058F3 95.6%);",
+                                borderWidth: "2px",
+                                backgroundRepeat: "no-repeat",
+                                backgroundSize: "contain",
+                                overflow: "hidden",
+                                borderRadius: "50%",
                                 }
                             : { textDecoration: "initial" }
                         }>{todo.complete ? <img src= {iconCheck} alt="check icon"/> : ""}</button>
@@ -198,7 +234,7 @@ const App = () => {
                 }
             </div>
             <div className="py-4 text-center bg-zinc-100 text-slate-700 font-semibold mt-7">
-                <p>Proudly implemented by <a href="">@ninja_frontend 🇨🇲</a></p>
+                <p>Proudly implemented by <a href="twitter.com/ninja_frontend">@ninja_frontend 🇨🇲</a></p>
             </div>
           </footer>
         </div>
