@@ -9,6 +9,7 @@ import iconMoon from "./img/icon-moon.svg";
 import iconCross from "./img/icon-cross.svg";
 import iconCheck from "./img/icon-check.svg";
 import iconSun from './img/icon-sun.svg';
+import TodoModal from "./TodoModal";
 
 const App = () => {
 
@@ -16,12 +17,14 @@ const App = () => {
   const [filter, setFilter] = useState('all');
   const [bgImage, setBgImage] = useState(bgDesktop);
   const [theme, setTheme] = useState('light');
-  const [decValue, setDecValue] = useState(0);
+  const [isOpen, setOpen] = useState(false);
+  const [selectedTodo, setSelectedTodo] = useState({})
 
 
   const inputRef = useRef();
   const priorityRef = useRef();
   const timeValueRef = useRef();
+  const todoIndexRef = useRef();
 
   const filterBtns = [ "All", "Active", "Completed" ]
 
@@ -103,6 +106,12 @@ const App = () => {
     }
   }
 
+  const handleIsOpen = (index) => {
+    setSelectedTodo(todoList[index])
+    setOpen(true);
+    console.log(selectedTodo)
+  }
+
   // initializing the onDrag start
   const handleDragStart = (e, index) => {
     e.dataTransfer.setData("index", index)
@@ -148,11 +157,6 @@ const App = () => {
     }
   }, [theme])
 
-  // const arr = [23, 34, 50, 0];
-  // const total = arr.reduce((item, n) => item + n);
-  // console.log(total)
-  
-
   const countCompleted = todoList.filter((todo)=>!todo.complete).length;
 
   // couting the total time to complete todo list
@@ -188,7 +192,7 @@ const App = () => {
                 </div>
                 <div className="add-todo py-[14px] rounded-b-[4px] rounded-t-[0px] add-todo flex w-full items-center px-8">
                   <div className="flex basis-3/4">
-                    <select name="" ref={timeValueRef} id="" className="block py-1 px-2 rounded-sm bg-slate-700">
+                    <select name="" ref={timeValueRef} required id="" className="block py-1 px-2 rounded-sm select-item focus:outline-none">
                       <option value="">Set time for task</option>
                       <option value="5">5 mins</option>
                       <option value="10">10 mins</option>
@@ -196,7 +200,7 @@ const App = () => {
                       <option value="30">30 mins</option>
                     </select>
                   </div>
-                  <select ref={priorityRef} name="" id="" className="block py-1 px-2 rounded-sm bg-slate-700">
+                  <select ref={priorityRef} name="" id="" required className="block py-1 px-2 rounded-sm select-item focus:outline-none">
                     <option value="" selected>Set Priority</option>
                     <option value="High">High</option>
                     <option value="Medium">Medium</option>
@@ -206,6 +210,7 @@ const App = () => {
               </form>
             </div>
           </header>
+          {/* Todo items */}
           <div className="mt-4 lg:mt-[-20px] px-5">
             <div className="todo-item rounded-[4px] overflow-hidden">
                 {todoList.filter(filterHandler).map((todo, index) => (
@@ -234,19 +239,22 @@ const App = () => {
                                 }
                             : { textDecoration: "initial" }
                         }>{todo.complete ? <img src= {iconCheck} alt="check icon"/> : ""}</button>
-                        <p
-                        className="text-slate-500 text-[12px] font-bold translate-x-3"
-                        style={
-                            todo.complete
-                            ? { textDecoration: "line-through", color: "#D2D3DB" }
-                            : { textDecoration: "initial" }
-                        }>
-                        {todo.name}
-                        </p>
-                        <div className="flex ml-7 items-center">
-                          <span className="block" >{todo.timeValue} Mins</span>
-                          <span  className="block ml-2" style={todo.priority ==="High" ? {color: "red"} : (todo.priority === "medium" ? {color: "orange"} : {color: "grey"})}>{todo.priority}</span>
-                          <span className="block" ></span>
+                        <div className="flex items-center" onClick={() => {todo.complete ? null: handleIsOpen(index)}}>
+                          <p
+                          
+                          className="text-slate-500 text-[12px] font-bold translate-x-3"
+                          style={
+                              todo.complete
+                              ? { textDecoration: "line-through", color: "#D2D3DB" }
+                              : { textDecoration: "initial" }
+                          }>
+                          {todo.name}
+                          </p>
+                          <div className="flex ml-7 items-center">
+                            <span className="block" >{todo.timeValue} Mins</span>
+                            <span  className="block ml-2" style={todo.priority ==="High" ? {color: "red"} : (todo.priority === "medium" ? {color: "orange"} : {color: "grey"})}>{todo.priority}</span>
+                            <span className="block" ></span>
+                          </div>
                         </div>
                     </div>
                     <span className="w-[12px] h-[12px]" onClick={() => deleteTodoItem(index)}>
@@ -267,6 +275,10 @@ const App = () => {
                 </div> : ""}
             </div>
           </div>
+          
+          {/* Modal section */}
+
+          {isOpen ? <TodoModal setOpen={setOpen} isOpen={isOpen} todo={selectedTodo}/> : null }
 
           <footer className="px-5 ">
             <div className="flex py-4 todo-item rounded-[4px] justify-center items-center gap-3 mt-[15px]">
