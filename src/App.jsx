@@ -16,9 +16,12 @@ const App = () => {
   const [filter, setFilter] = useState('all');
   const [bgImage, setBgImage] = useState(bgDesktop);
   const [theme, setTheme] = useState('light');
+  const [decValue, setDecValue] = useState(0);
 
 
   const inputRef = useRef();
+  const priorityRef = useRef();
+  const timeValueRef = useRef();
 
   const filterBtns = [ "All", "Active", "Completed" ]
 
@@ -28,10 +31,14 @@ const App = () => {
     if (inputRef.current.value.trim() !== "") {
         setTodoList([...todoList, {
             name: inputRef.current.value,
-            complete: false
+            complete: false,
+            timeValue: parseInt(timeValueRef.current.value),
+            priority: priorityRef.current.value,
         }])
     }
     inputRef.current.value = "";
+    timeValueRef.current.value = "";
+    priorityRef.current.value = "";
   };
 
   // Delete a todo item
@@ -118,6 +125,7 @@ const App = () => {
   
 
   useEffect(() => {
+
     const handleResize = () => {
         let width = window.innerWidth;
         if (width >= 1024 && theme === 'light') {
@@ -139,9 +147,19 @@ const App = () => {
       window.addEventListener("resize", handleResize)
     }
   }, [theme])
+
+  // const arr = [23, 34, 50, 0];
+  // const total = arr.reduce((item, n) => item + n);
+  // console.log(total)
   
 
-  const countCompleted = todoList.filter((todo)=>!todo.complete).length
+  const countCompleted = todoList.filter((todo)=>!todo.complete).length;
+
+  // couting the total time to complete todo list
+  let total = 0;
+  todoList.filter((todo)=>!todo.complete).map((item) => {
+    total += item.timeValue;
+  });
 
   return (
     <Fragment>
@@ -159,14 +177,31 @@ const App = () => {
                 <span onClick={handleTheme} className="cursor-pointer"><img src={theme === 'light' ? iconMoon : iconSun} alt="icon moon" /></span>
               </div>
               <form action="" onSubmit={(e) => addTodoItem(e)}>
-                <div className="py-[14px] rounded-[4px] add-todo flex w-full items-center px-8">
-                  <span className="block w-[24px] small-ring h-[24px] rounded-full border-2 border-slate-100"></span>
+                <div className="py-[14px] rounded-t-[4px] add-todo flex w-full items-center px-8">
+                  <button type="submit" className="block w-[24px] small-ring h-[24px] rounded-full border-2 border-slate-100"></button>
                   <input
                     type="text"
                     ref={inputRef}
                     placeholder="Create new todo..."
                     className="font-bold placeholder:font-semibold placeholder:text-slate-500 border-0 bg-transparent translate-x-[25px] focus:outline-none caret-blue-500 text-[12px] lg:w-[85%]"
                   />
+                </div>
+                <div className="add-todo py-[14px] rounded-b-[4px] rounded-t-[0px] add-todo flex w-full items-center px-8">
+                  <div className="flex basis-3/4">
+                    <select name="" ref={timeValueRef} id="" className="block py-1 px-2 rounded-sm bg-slate-700">
+                      <option value="">Set time for task</option>
+                      <option value="5">5 mins</option>
+                      <option value="10">10 mins</option>
+                      <option value="20">20 mins</option>
+                      <option value="30">30 mins</option>
+                    </select>
+                  </div>
+                  <select ref={priorityRef} name="" id="" className="block py-1 px-2 rounded-sm bg-slate-700">
+                    <option value="" selected>Set Priority</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                  </select>
                 </div>
               </form>
             </div>
@@ -175,7 +210,7 @@ const App = () => {
             <div className="todo-item rounded-[4px] overflow-hidden">
                 {todoList.filter(filterHandler).map((todo, index) => (
                     <div
-                    className=" border-b-2 hover:cursor-move todo-border py-4 flex items-center px-6 last:border-b-transparent justify-between"
+                    className=" border-b-2 hover:cursor-pointer todo-border py-4 flex items-center px-6 last:border-b-transparent justify-between"
                     key={index}
                     draggable
                     onDragStart={(e) => handleDragStart(e, index)}
@@ -208,6 +243,11 @@ const App = () => {
                         }>
                         {todo.name}
                         </p>
+                        <div className="flex ml-7 items-center">
+                          <span className="block" >{todo.timeValue} Mins</span>
+                          <span  className="block ml-2" style={todo.priority ==="High" ? {color: "red"} : (todo.priority === "medium" ? {color: "orange"} : {color: "grey"})}>{todo.priority}</span>
+                          <span className="block" ></span>
+                        </div>
                     </div>
                     <span className="w-[12px] h-[12px]" onClick={() => deleteTodoItem(index)}>
                         <img
@@ -219,7 +259,10 @@ const App = () => {
                     </div>
                 ))}
                 { todoList.length > 0 ? <div className="text-slate-500 config text-[12px] flex justify-between py-4 px-6">
-                    <span>{countCompleted} items left</span>
+                    <div className="flex gap-2">
+                      <span>{countCompleted} items left</span>
+                      <span>{total} mins to clear list.</span>
+                    </div>
                     <button onClick={clearCompleted}>Clear completed</button>
                 </div> : ""}
             </div>
