@@ -69,3 +69,24 @@ body {
 .config {
   background: var(--white);
 }
+
+.modal-bg {
+  background: var(--bg-color);
+}
+
+.modal-bg.active {
+  animation: scale-up 1.5s ease-in-out;
+}
+
+.select-item {
+  background-color: var(--white);
+}
+
+@keyframes scale-up {
+  0% {
+    transform: scale(0.85);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
