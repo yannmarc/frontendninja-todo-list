@@ -75,12 +75,54 @@ body {
 }
 
 .modal-bg.active {
-  animation: scale-up 1.5s ease-in-out;
+  animation: scale-up .8s ease-in-out;
 }
 
 .select-item {
   background-color: var(--white);
 }
+
+.progress-container {
+  width: 400px;
+  height: 400px;
+  background-color: var(--bg-color);
+  position: absolute;
+  z-index: 1;
+  border: 2px solid red;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.semicircle {
+  width: 50%;
+  height: inherit;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: right center;
+}
+
+.semicircle:nth-child(1) {
+  background-color: rgb(21, 167, 181);
+  z-index: 2;
+}
+.semicircle:nth-child(2) {
+  background-color: rgb(21, 167, 181);
+  z-index: 3;
+}
+.semicircle:nth-child(3) {
+  background-color: white;
+  z-index: 4;
+}
+
+.outermost-circle {
+  width: 380px;
+  height: 380px;
+  background-color: #E4E5F1;
+  border-radius: 50%;
+  z-index: 5;
+}
+
 
 @keyframes scale-up {
   0% {

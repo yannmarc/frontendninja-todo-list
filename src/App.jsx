@@ -9,7 +9,6 @@ import iconMoon from "./img/icon-moon.svg";
 import iconCross from "./img/icon-cross.svg";
 import iconCheck from "./img/icon-check.svg";
 import iconSun from './img/icon-sun.svg';
-import TodoModal from "./TodoModal";
 
 const App = () => {
 
@@ -17,16 +16,17 @@ const App = () => {
   const [filter, setFilter] = useState('all');
   const [bgImage, setBgImage] = useState(bgDesktop);
   const [theme, setTheme] = useState('light');
-  const [isOpen, setOpen] = useState(false);
-  const [selectedTodo, setSelectedTodo] = useState({})
+  const [selectedTodo, setSelectedTodo] = useState({});
+  const [themeColor, setThemeColor] = useState('#6DF258');
 
-
+  // App Refs
   const inputRef = useRef();
   const priorityRef = useRef();
   const timeValueRef = useRef();
-  const todoIndexRef = useRef();
+  const themeRef = useRef();
 
-  const filterBtns = [ "All", "Active", "Completed" ]
+  const filterBtns = [ "All", "Active", "Completed" ];
+  const themeColorArr = ["#F4A60E", "#2EF40E", "#07CAF4"];
 
   // Add new todo
   const addTodoItem = (e) => {
@@ -37,6 +37,7 @@ const App = () => {
             complete: false,
             timeValue: parseInt(timeValueRef.current.value),
             priority: priorityRef.current.value,
+            color: themeColor
         }])
     }
     inputRef.current.value = "";
@@ -131,6 +132,11 @@ const App = () => {
     newTodoList.splice(index, 0, draggedTodo);
     setTodoList(newTodoList);
   }
+
+  // handle the themeColor changer
+  const handleThemeColorChanger = (refValue) => {
+    setThemeColor(refValue);
+  }
   
 
   useEffect(() => {
@@ -174,12 +180,14 @@ const App = () => {
           className="absolute top-0 left-0 w-screen h-[200px] lg:h-[300px] object-cover bg-center"
         />
         <div className="relative z-10 max-w-lg mx-auto">
+          {/* Todo header */}
           <header className="pt-12 lg:py-[77px]">
             <div className="px-5 py-[0px]">
               <div className="flex items-center justify-between mb-[16px]">
                 <h1 className="font-bold text-[30px] tracking-widest text-white">TODO</h1>
                 <span onClick={handleTheme} className="cursor-pointer"><img src={theme === 'light' ? iconMoon : iconSun} alt="icon moon" /></span>
               </div>
+              {/* Todo's form */}
               <form action="" onSubmit={(e) => addTodoItem(e)}>
                 <div className="py-[14px] rounded-t-[4px] add-todo flex w-full items-center px-8">
                   <button type="submit" className="block w-[24px] small-ring h-[24px] rounded-full border-2 border-slate-100"></button>
@@ -201,30 +209,37 @@ const App = () => {
                     </select>
                   </div>
                   <select ref={priorityRef} name="" id="" required className="block py-1 px-2 rounded-sm select-item focus:outline-none">
-                    <option value="" selected>Set Priority</option>
+                    <option value="" defaultValue={"Low"}>Set Priority</option>
                     <option value="High">High</option>
                     <option value="Medium">Medium</option>
                     <option value="Low">Low</option>
                   </select>
+                  <div className="flex items-center ml-4 gap-2">
+                   {themeColorArr.map((color) => (
+                     <button onClick={(e) => {handleThemeColorChanger(e.target.value)}} type="button" ref={themeRef} value={color} key={color} style={{backgroundColor: `${color}`}} className={`w-5 h-5 rounded-full bg-[${color}]`}></button>
+                   ))}
+                  </div>
                 </div>
               </form>
             </div>
           </header>
+
           {/* Todo items */}
-          <div className="mt-4 lg:mt-[-20px] px-5">
+
+          <div className={`mt-4 lg:mt-[-20px] px-5`}>
             <div className="todo-item rounded-[4px] overflow-hidden">
                 {todoList.filter(filterHandler).map((todo, index) => (
                     <div
-                    className=" border-b-2 hover:cursor-pointer todo-border py-4 flex items-center px-6 last:border-b-transparent justify-between"
+                    className={`border-b-2 text-[${themeColor}] hover:cursor-pointer todo-border py-4 flex items-center px-6 last:border-b-transparent justify-between`}
                     key={index}
                     draggable
                     onDragStart={(e) => handleDragStart(e, index)}
                     onDragOver={(e) => handleDragOver(e, index)}
                     onDrop={(e) => handleDragedItem(e, index)}
                     >
-                    <div className="flex items-center">
+                    <div className="flex items-center w-full">
                         <button
-                        className="mark-todo w-[24px] h-[24px] rounded-full flex justify-center items-center border-2 small-ring"
+                        className="mark-todo w-[24px] h-[24px] rounded-full border-2 flex justify-center items-center small-ring"
                         onClick={() => markTodoItem(index)}
                         style={
                             todo.complete
@@ -239,29 +254,29 @@ const App = () => {
                                 }
                             : { textDecoration: "initial" }
                         }>{todo.complete ? <img src= {iconCheck} alt="check icon"/> : ""}</button>
-                        <div className="flex items-center" onClick={() => {todo.complete ? null: handleIsOpen(index)}}>
+                        <div className="flex items-start justify-between translate-x-2 basis-10/12">
                           <p
-                          
-                          className="text-slate-500 text-[12px] font-bold translate-x-3"
+                          className="text-slate-500 text-[12px] font-bold"
                           style={
                               todo.complete
                               ? { textDecoration: "line-through", color: "#D2D3DB" }
                               : { textDecoration: "initial" }
                           }>
                           {todo.name}
+
+                          <span style={{color: `${todo.color}`, backgroundColor: `${todo.color}3e`}} className="block px-2 mt-1 rounded-full py-[0.5px] bg-blue-100 w-fit" >{todo.timeValue} Mins</span>
                           </p>
-                          <div className="flex ml-7 items-center">
-                            <span className="block" >{todo.timeValue} Mins</span>
-                            <span  className="block ml-2" style={todo.priority ==="High" ? {color: "red"} : (todo.priority === "medium" ? {color: "orange"} : {color: "grey"})}>{todo.priority}</span>
-                            <span className="block" ></span>
+                          
+                          <div className="ml-5 items-center">
+                            <span style={{color: `${todo.color}`, backgroundColor: `${todo.color}3e`}} className="block py-[0.5px] px-2 rounded-sm font-bold">{todo.priority}</span>
                           </div>
                         </div>
                     </div>
-                    <span className="w-[12px] h-[12px]" onClick={() => deleteTodoItem(index)}>
+                    <span className="w-[12px] h-[12px] block" onClick={() => deleteTodoItem(index)}>
                         <img
                         src={iconCross}
                         alt="iconCross"
-                        className="w-[inherit]"
+                        className="w-[inherit] block"
                         />
                     </span>
                     </div>
@@ -277,14 +292,11 @@ const App = () => {
           </div>
           
           {/* Modal section */}
-
-          {isOpen ? <TodoModal setOpen={setOpen} isOpen={isOpen} todo={selectedTodo}/> : null }
-
           <footer className="px-5 ">
             <div className="flex py-4 todo-item rounded-[4px] justify-center items-center gap-3 mt-[15px]">
                 {
                     filterBtns.map((item) => (
-                        <button key={item} className={item.toLocaleLowerCase() === filter ? "text-[12px] font-semibold text-blue-500" : "text-[12px] font-semibold"} onClick={() => setFilter(item.toLocaleLowerCase())}>{item}</button>
+                        <button key={item} ref={themeRef} className={item.toLocaleLowerCase() === filter ? "text-[12px] font-semibold text-blue-500" : "text-[12px] font-semibold"} onClick={() => setFilter(item.toLocaleLowerCase())}>{item}</button>
                     ))
                 }
             </div>

@@ -1,4 +1,5 @@
 import React, { Fragment, useState } from "react";
+import ProgressTimer from "./ProgressTimer";
 
 const TodoModal = ({ setOpen, todo, isOpen }) => {
   const [isStarted, setStarted] = useState(false);
@@ -13,12 +14,8 @@ const TodoModal = ({ setOpen, todo, isOpen }) => {
         onClick={() => setOpen(false)}
         className="w-screen h-screen fixed z-[999] top-0 left-0 bg-[#020202de] flex justify-center items-center"
       >
-        <div className={`${isOpen ? "active": ''} transition-all modal-bg bg-slate-800 rounded-md px-[100px] py-[50px]`}>
-          <div className="w-[250px] h-[250px] rounded-full border-8 border-orange-400 flex items-center justify-center">
-            <span className="text-[60px] font-semibold text-slate-600">
-              {todo.timeValue} : 00
-            </span>
-          </div>
+        <div className={`${isOpen ? "active": ''} transition-all h-[600px] w-[600px] modal-bg bg-slate-800 rounded-md px-[100px] py-[50px]`}>
+          <ProgressTimer />
           <span className="text-lg text-slate-500 text-center py-4 block">
             {todo.name}
           </span>

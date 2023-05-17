@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "frontend-todo",
+  "name": "Frontend todo's for frontend ninja's",
   "icons": [
     {
       "src": "favicon.ico",
